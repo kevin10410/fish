@@ -38,7 +38,6 @@ function uploadToImgur(event) {
     const files = imageSelector.files;
     console.log(files.length)
     if (files.length === 1) {
-
         if (picData.size < 10485760) {
             imageStatus.innerHTML = '圖片上傳中...'
             picData = imageSelector.files[0];
@@ -60,16 +59,14 @@ function uploadToImgur(event) {
                 data: form
             }
 
+            $.ajax(settings).done(function (response) {
+                let responseData = JSON.parse(response)['data'];
+                console.log(responseData);
+                imageStatus.innerHTML = `照片上傳成功！ <a href = ${responseData['link']} target="_blank">${responseData['link']}</a>`;
+            });
         } else {
             window.alert('請重新選擇小於10MB的上傳照片！');
         };
-
-        $.ajax(settings).done(function (response) {
-            let responseData = JSON.parse(response)['data'];
-            console.log(responseData);
-            imageStatus.innerHTML = `照片上傳成功！ <a href = ${responseData['link']} target="_blank">${responseData['link']}</a>`;
-        });
-
     } else {
         window.alert('請先選擇照片！');
     }
