@@ -14,22 +14,22 @@ imageSelector.addEventListener('change', show);
 
 function show(event) {
     picData = imageSelector.files[0];
+    console.log(picData.size)
     if (picData.size < 10485760) {
-        uploadBtn.removeAttribute('disabled', true)
         reader = new FileReader();
         reader.readAsDataURL(picData);
+
         reader.onload = function () {
-            imageStatus.innerHTML = '目前選擇的照片如下：';
             if (previewTable.childElementCount === 3) {
                 previewTable.removeChild(previewTable.lastElementChild);
+                console.log(previewTable);
             }
             previewArea.style.backgroundImage = `url(${reader.result})`;
         };
     } else {
-        uploadBtn.setAttribute('disabled', true);
         window.alert('請重新選擇小於10MB的上傳照片！');
-        imageStatus.innerHTML = '請重新選擇小於10MB的上傳照片！';
-        previewArea.style.backgroundImage = '';
+        console.log(imageSelector.files);
+        imageStatus.innerHTML = '請重新選擇小於10MB的上傳照片！'
     }
 }
 
@@ -37,29 +37,40 @@ function uploadToImgur(event) {
     event.preventDefault();
     const files = imageSelector.files;
     console.log(files.length)
-    imageStatus.innerHTML = '圖片上傳中...'
-    picData = imageSelector.files[0];
-    var form = new FormData();
-    form.append("image", picData);
+    if (files.length === 1) {
 
-    var settings = {
-        async: true,
-        crossDomain: true,
-        album: "CVbLU",
-        url: "https://api.imgur.com/3/image",
-        method: "POST",
-        headers: {
-            Authorization: "Client-ID c161fabd6a0a19f"
-        },
-        processData: false,
-        contentType: false,
-        mimeType: "multipart/form-data",
-        data: form
-    };
+        if (picData.size < 10485760) {
+            imageStatus.innerHTML = '圖片上傳中...'
+            picData = imageSelector.files[0];
+            var form = new FormData();
+            form.append("image", picData);
 
-    $.ajax(settings).done(function (response) {
-        let responseData = JSON.parse(response)['data'];
-        console.log(responseData);
-        imageStatus.innerHTML = `照片上傳成功！ <a href = ${responseData['link']} target="_blank">${responseData['link']}</a>`;
-    });
+            var settings = {
+                async: true,
+                crossDomain: true,
+                album: "CVbLU",
+                url: "https://api.imgur.com/3/image",
+                method: "POST",
+                headers: {
+                    Authorization: "Client-ID c161fabd6a0a19f"
+                },
+                processData: false,
+                contentType: false,
+                mimeType: "multipart/form-data",
+                data: form
+            }
+
+        } else {
+            window.alert('請重新選擇小於10MB的上傳照片！');
+        };
+
+        $.ajax(settings).done(function (response) {
+            let responseData = JSON.parse(response)['data'];
+            console.log(responseData);
+            imageStatus.innerHTML = `照片上傳成功！ <a href = ${responseData['link']} target="_blank">${responseData['link']}</a>`;
+        });
+
+    } else {
+        window.alert('請先選擇照片！');
+    }
 }
