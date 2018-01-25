@@ -1,5 +1,3 @@
-
-
 let picData;
 let reader;
 let objurl;
